@@ -2,11 +2,18 @@ const pages=[...document.querySelectorAll('.page')];
 const navLinks=[...document.querySelectorAll('.nav a[data-page]')];
 const nav=document.querySelector('.nav');
 const toggle=document.querySelector('.menu-toggle');
-function showPage(id){if(!document.getElementById(id)||!document.getElementById(id).classList.contains('page'))id='beranda';pages.forEach(p=>p.classList.toggle('active',p.id===id));navLinks.forEach(a=>a.classList.toggle('active',a.dataset.page===id));nav.classList.remove('open');toggle.setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});history.replaceState(null,'','#'+id)}
+const backdrop=document.createElement('button');backdrop.className='nav-backdrop';backdrop.type='button';backdrop.setAttribute('aria-label','Tutup menu');backdrop.hidden=true;document.body.appendChild(backdrop);
+function closeMenu(){nav.classList.remove('open');toggle.setAttribute('aria-expanded','false');backdrop.hidden=true}
+backdrop.addEventListener('click',closeMenu);
+let touchStartX=0,touchStartY=0;
+nav.addEventListener('touchstart',e=>{touchStartX=e.changedTouches[0].clientX;touchStartY=e.changedTouches[0].clientY},{passive:true});
+nav.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-touchStartX;const dy=e.changedTouches[0].clientY-touchStartY;if(dx>65&&Math.abs(dx)>Math.abs(dy)*1.2)closeMenu()},{passive:true});
+
+function showPage(id){if(!document.getElementById(id)||!document.getElementById(id).classList.contains('page'))id='beranda';pages.forEach(p=>p.classList.toggle('active',p.id===id));navLinks.forEach(a=>a.classList.toggle('active',a.dataset.page===id));closeMenu();window.scrollTo({top:0,behavior:'smooth'});history.replaceState(null,'','#'+id)}
 navLinks.forEach(a=>a.addEventListener('click',e=>{e.preventDefault();showPage(a.dataset.page)}));
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{showPage(b.dataset.go);if(b.dataset.variant){const v=document.getElementById('variant');v.value=b.dataset.variant==='horti'?'kocor':'muda';resetResult()}}));
 document.querySelectorAll('.brand[data-page],.footer-brand[data-page]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();showPage(a.dataset.page)}));
-toggle.addEventListener('click',()=>{const open=nav.classList.toggle('open');toggle.setAttribute('aria-expanded',String(open))});
+toggle.addEventListener('click',()=>{const open=!nav.classList.contains('open');nav.classList.toggle('open',open);toggle.setAttribute('aria-expanded',String(open));backdrop.hidden=!open});
 document.getElementById('year').textContent=new Date().getFullYear();
 const variant=document.getElementById('variant'),water=document.getElementById('water'),mainResult=document.getElementById('result-main'),detail=document.getElementById('result-detail');
 function fmt(n){return new Intl.NumberFormat('id-ID',{maximumFractionDigits:2}).format(n)}
