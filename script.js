@@ -159,12 +159,21 @@ const mainResult = document.getElementById('result-main');
 const detail = document.getElementById('result-detail');
 const resultBox = document.getElementById('result-box');
 
+/* Papan ketik angka saja untuk kolom jumlah air (bisa koma atau titik: 1,5 / 1.5) */
+water.type = 'text';
+water.setAttribute('inputmode', 'decimal');
+water.setAttribute('pattern', '[0-9]*[.,]?[0-9]*');
+water.setAttribute('autocomplete', 'off');
+water.addEventListener('input', () => {
+  water.value = water.value.replace(/[^0-9.,]/g, '');
+});
+
 function fmt(n) {
   return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(n);
 }
 
 function calculate() {
-  const w = Number(water.value);
+  const w = Number(String(water.value).replace(',', '.'));
   resultBox.classList.remove('hidden');
   if (!Number.isFinite(w) || w <= 0) {
     mainResult.textContent = 'Masukkan jumlah air yang valid';
