@@ -21,6 +21,11 @@ function showPage(id) {
 
 /* ===== Menu mobile ===== */
 let closeTimer = null;
+let snapTimer = null;
+
+function clearSnap() {
+  if (snapTimer) { clearTimeout(snapTimer); snapTimer = null; }
+}
 
 function resetNavStyles() {
   nav.style.transition = '';
@@ -29,6 +34,7 @@ function resetNavStyles() {
 }
 
 function openMenu() {
+  clearSnap();
   if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
   const r = toggle.getBoundingClientRect();
   nav.style.setProperty('--menu-top', Math.round(r.bottom + 8) + 'px');
@@ -40,6 +46,7 @@ function openMenu() {
 function closeMenu(duration) {
   if (!nav.classList.contains('open')) return;
   const d = duration || 0.4;
+  clearSnap();
   if (closeTimer) clearTimeout(closeTimer);
   nav.style.transition = 'transform ' + d + 's ' + EASE + ',opacity ' + (d * 0.8) + 's ease ' + (d * 0.25) + 's';
   nav.style.transform = OFFSCREEN;
@@ -68,6 +75,7 @@ function paintDrag() {
 
 nav.addEventListener('touchstart', e => {
   if (!nav.classList.contains('open')) return;
+  clearSnap();
   if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
   const t = e.touches[0];
   startX = lastX = t.clientX;
@@ -101,6 +109,11 @@ nav.addEventListener('touchend', () => {
   if (!dragging) return;
   dragging = false;
   if (raf) { cancelAnimationFrame(raf); raf = 0; }
+  if (dragX < 4) { // hanya ketukan, bukan geseran
+    nav.style.transition = '';
+    nav.style.transform = '';
+    return;
+  }
   const w = nav.offsetWidth || 1;
   const shouldClose = dragX > w * 0.22 || (velocity > 0.5 && dragX > 12);
   if (shouldClose) {
@@ -109,7 +122,11 @@ nav.addEventListener('touchend', () => {
   } else {
     nav.style.transition = 'transform .36s ' + EASE;
     nav.style.transform = 'translate3d(0,0,0)';
-    setTimeout(() => { if (nav.classList.contains('open')) resetNavStyles(); }, 380);
+    clearSnap();
+    snapTimer = setTimeout(() => {
+      snapTimer = null;
+      if (nav.classList.contains('open') && !closeTimer) resetNavStyles();
+    }, 380);
   }
 });
 
@@ -118,7 +135,8 @@ nav.addEventListener('touchcancel', () => {
   dragging = false;
   nav.style.transition = 'transform .3s ' + EASE;
   nav.style.transform = 'translate3d(0,0,0)';
-  setTimeout(resetNavStyles, 320);
+  clearSnap();
+  snapTimer = setTimeout(() => { snapTimer = null; if (!closeTimer) resetNavStyles(); }, 320);
 });
 
 /* Tutup menu saat menyentuh di luar menu */

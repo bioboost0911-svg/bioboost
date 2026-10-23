@@ -58,3 +58,12 @@ body{overflow-x:clip}
     transition:transform .4s cubic-bezier(.22,.8,.25,1),opacity .2s ease,visibility 0s;
   }
 }
+
+/* ===== Perbaikan v3 ===== */
+/* Garis di atas huruf B: potong juga pada wordmark di judul halaman & footer */
+.wordmark-inline,.footer-wordmark{clip-path:inset(var(--wm-crop-top) 0 0 0)}
+
+/* Footer selalu menempel di dasar layar, sehingga tidak ada area putih di bawahnya pada halaman pendek (Keberlanjutan, Kontak) */
+body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+.site-header,.footer{flex:none}
+main{flex:1 0 auto;width:100%}
