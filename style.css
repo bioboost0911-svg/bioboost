@@ -67,3 +67,11 @@ body{overflow-x:clip}
 body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
 .site-header,.footer{flex:none}
 main{flex:1 0 auto;width:100%}
+
+/* ===== Perbaikan v4 ===== */
+/* Ruang kosong di dasar footer, supaya tulisan footer bisa digulir naik di atas toolbar browser iPhone */
+.footer{padding-bottom:calc(34px + env(safe-area-inset-bottom,0px))}
+@media (max-width:600px){.footer{padding-bottom:calc(130px + env(safe-area-inset-bottom,0px))}}
+
+/* Wordmark footer: ukuran penuh di dalam kotak putih (sebelumnya terpotong lingkaran 42px) */
+.footer-brand img.footer-wordmark{width:clamp(170px,48vw,210px);height:auto;max-height:none;padding:6px 14px;border-radius:12px;background:#fff;clip-path:none;object-view-box:inset(var(--wm-crop-top) 0 0 0)}
