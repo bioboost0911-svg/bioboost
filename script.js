@@ -216,6 +216,7 @@ document.addEventListener('click', e => {
 window.addEventListener('hashchange', () => showPage(location.hash.slice(1) || 'beranda'));
 
 /* ===== Footer & tombol ke atas ===== */
+document.querySelectorAll('.footer-wordmark').forEach(el => el.remove()); // hilangkan tulisan BioBoost di footer
 document.getElementById('year').textContent = new Date().getFullYear();
 const topButton = document.getElementById('toTop');
 window.addEventListener('scroll', () => topButton.classList.toggle('show', window.scrollY > 300));
